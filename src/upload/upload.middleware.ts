@@ -11,20 +11,20 @@ export class UploadMiddleware implements NestMiddleware {
       destination: './public/products',
       filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, `${uniqueSuffix}${getExtname(file.originalname)}`); // Menggunakan fungsi getExtname untuk mendapatkan ekstensi
+        cb(null, `${uniqueSuffix}${getExtname(file.originalname)}`);
       },
     }),
     fileFilter: (req, file, cb) => {
-      const filetypes = /jpeg|jpg|png|gif/; // Tipe file yang diperbolehkan
+      const filetypes = /jpeg|jpg|png|gif/;
       const mimetype = filetypes.test(file.mimetype);
-      const extname = filetypes.test(getExtname(file.originalname).toLowerCase()); // Ubah nama variabel untuk menghindari konflik
+      const extname = filetypes.test(getExtname(file.originalname).toLowerCase());
 
       if (mimetype && extname) {
         return cb(null, true);
       }
       cb(new BadRequestException('Invalid file type. Only .jpeg, .jpg, .png, and .gif are allowed.'));
     },
-  }).single('image'); // 'image' adalah nama field yang diupload
+  }).single('image');
 
   use(req: Request, res: Response, next: () => void) {
     this.upload(req, res, (err) => {

@@ -7,6 +7,8 @@ import { Product } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import * as path from 'path';
+import * as fs from 'fs';
 
 interface ApiResponse {
     statusCode: number;
@@ -19,7 +21,11 @@ export class ProductService {
 
   async getProducts(): Promise<any> {
     try {
-      const data = await this.prismaService.product.findMany();
+      const data = await this.prismaService.product.findMany({
+        where: {
+          deletedAt: null,
+        },
+      });
 
       return {
         statusCode: HttpStatus.OK,
@@ -75,7 +81,8 @@ export class ProductService {
         message: 'Product created successfully',
       };
     } catch (error) {
-      throw InternalServerErrorException;
+      console.error('Error creating product:', error); // Mencetak kesalahan di konsol untuk debugging
+      throw new InternalServerErrorException('Failed to create product');
     }
   }
 
@@ -86,7 +93,20 @@ export class ProductService {
       return dataProduct;
     }
 
+    const existingProduct = dataProduct.data;
+    const oldImage = existingProduct.image;
+
     try {
+      if (product.image) {
+        const oldImagePath = path.join(__dirname, '..', 'public/products', oldImage);
+        fs.unlink(oldImagePath, (err) => {
+          if (err) {
+            console.error('Error deleting old image:', err);
+            throw new InternalServerErrorException('Failed to delete old image');
+          }
+        });
+      }
+
       const data = await this.prismaService.product.update({
         where: {
           id: id,
@@ -106,7 +126,16 @@ export class ProductService {
         message: 'Product updated successfully',
       };
     } catch (error) {
-      throw InternalServerErrorException;
+      if (product.image) {
+        const newImagePath = path.join(__dirname, '..', 'public/products', product.image);
+        fs.unlink(newImagePath, (err) => {
+          if (err) {
+            console.error('Error deleting new image after update failure:', err);
+          }
+        });
+      }
+
+      throw new InternalServerErrorException('Failed to update product');
     }
   }
 

@@ -1,8 +1,8 @@
 {
   "name": "backend-kasir",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Aplikasi Backend Kasir Sederhana",
+  "author": "Heru Anggara",
   "private": true,
   "license": "MIT",
   "scripts": {

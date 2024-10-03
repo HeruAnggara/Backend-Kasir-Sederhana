@@ -9,10 +9,4 @@ import { UploadMiddleware } from 'src/upload/upload.middleware';
   controllers: [ProductController],
   providers: [ProductService]
 })
-export class ProductModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(UploadMiddleware) // Mendaftarkan middleware
-      .forRoutes(ProductController); // Terapkan middleware untuk rute di ProductController
-  }
-}
+export class ProductModule {}

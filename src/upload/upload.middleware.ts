@@ -26,12 +26,15 @@ export class UploadMiddleware implements NestMiddleware {
     },
   }).single('image');
 
-  use(req: Request, res: Response, next: () => void) {
+  use(req: Request, res: Response, next: (err?: any) => void) {
+    console.log('Incoming Request:', req.method, req.url); // Log incoming request
+
     this.upload(req, res, (err) => {
       if (err) {
-        return err;
+        return next(err); // Menangani error jika ada
       }
-      next();
+      next(); // Melanjutkan ke middleware berikutnya
     });
   }
+
 }

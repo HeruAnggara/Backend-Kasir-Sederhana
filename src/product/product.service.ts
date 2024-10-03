@@ -63,7 +63,18 @@ export class ProductService {
     }
   }
 
-  async createProduct(product: CreateProductDto): Promise<ApiResponse> {
+  async createProduct(product: CreateProductDto): Promise<ApiResponse> {    
+    if (typeof product.costPrice === 'string') {
+      product.costPrice = parseFloat(product.costPrice);
+    }
+  
+    if (typeof product.sellPrice === 'string') {
+      product.sellPrice = parseFloat(product.sellPrice);
+    }
+  
+    if (typeof product.stock === 'string') {
+      product.stock = parseInt(product.stock, 10);
+    }
     try {
       const data = await this.prismaService.product.create({
         data: {
@@ -76,12 +87,14 @@ export class ProductService {
         },
       });
 
+      console.log('Product saved successfully:', data); 
+
       return {
         statusCode: HttpStatus.CREATED,
         message: 'Product created successfully',
       };
     } catch (error) {
-      console.error('Error creating product:', error); // Mencetak kesalahan di konsol untuk debugging
+      console.error('Error creating product:', error);
       throw new InternalServerErrorException('Failed to create product');
     }
   }

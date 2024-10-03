@@ -6,6 +6,8 @@ import { ApiResponse } from 'helper/ApiResponse.interface';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as fs from 'fs';
 import * as path from 'path';
+import { diskStorage } from 'multer';
+import { extname as getExtname } from 'path'; 
 
 @Controller('product')
 export class ProductController {
@@ -24,13 +26,23 @@ export class ProductController {
     }
 
     @Post()
-    @UseInterceptors(FileInterceptor('image'))
+    @UseInterceptors(
+        FileInterceptor('image', {
+          storage: diskStorage({
+            destination: 'public/products',
+            filename: (req, file, cb) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+                cb(null, `${uniqueSuffix}${getExtname(file.originalname)}`);
+            },
+          }),
+        }),
+      )
     async createProduct(
         @Body() product: CreateProductDto,
         @UploadedFile() image: Express.Multer.File
     ): Promise<ApiResponse> {
         product.image = image.filename;
-
+        
         try {
             return await this.productService.createProduct(product);
         } catch (error) {
@@ -59,7 +71,7 @@ export class ProductController {
       return this.productService.updateProduct(id, product);
     }
 
-    @Patch(':id')
+    @Patch(':id/delete')
     async deleteProduct(
         @Param('id') id: string
     ): Promise<ApiResponse> {

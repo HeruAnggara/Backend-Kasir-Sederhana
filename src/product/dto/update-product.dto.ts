@@ -17,7 +17,6 @@ export class UpdateProductDto {
     sellPrice: number;
 
     @IsString()
-    @IsNotEmpty()
     image: string;
 
     @IsNumber()

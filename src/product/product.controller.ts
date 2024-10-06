@@ -58,7 +58,17 @@ export class ProductController {
     }
 
     @Put(':id')
-    @UseInterceptors(FileInterceptor('image'))
+    @UseInterceptors(
+        FileInterceptor('image', {
+          storage: diskStorage({
+            destination: 'public/products',
+            filename: (req, file, cb) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+                cb(null, `${uniqueSuffix}${getExtname(file.originalname)}`);
+            },
+          }),
+        }),
+      )
     async updateProduct(
       @Param('id') id: string,
       @Body() product: UpdateProductDto,

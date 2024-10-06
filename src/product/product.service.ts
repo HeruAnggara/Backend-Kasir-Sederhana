@@ -8,7 +8,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';;
 
 interface ApiResponse {
     statusCode: number;
@@ -110,14 +110,16 @@ export class ProductService {
     const oldImage = existingProduct.image;
 
     try {
-      if (product.image) {
-        const oldImagePath = path.join(__dirname, '..', 'public/products', oldImage);
-        fs.unlink(oldImagePath, (err) => {
-          if (err) {
-            console.error('Error deleting old image:', err);
-            throw new InternalServerErrorException('Failed to delete old image');
-          }
-        });
+      if (typeof product.costPrice === 'string') {
+        product.costPrice = parseFloat(product.costPrice);
+      }
+    
+      if (typeof product.sellPrice === 'string') {
+        product.sellPrice = parseFloat(product.sellPrice);
+      }
+    
+      if (typeof product.stock === 'string') {
+        product.stock = parseInt(product.stock, 10);
       }
 
       const data = await this.prismaService.product.update({
@@ -134,18 +136,28 @@ export class ProductService {
         },
       });
 
+      if (product.image && oldImage) {
+        const oldImagePath = path.join('public/products', oldImage);
+        try {
+          await fs.unlink(oldImagePath); // Menghapus gambar lama setelah update berhasil
+        } catch (err) {
+          console.error('Error deleting old image:', err);
+          throw new InternalServerErrorException('Failed to delete old image');
+        }
+      }
+
       return {
         statusCode: HttpStatus.OK,
         message: 'Product updated successfully',
       };
     } catch (error) {
       if (product.image) {
-        const newImagePath = path.join(__dirname, '..', 'public/products', product.image);
-        fs.unlink(newImagePath, (err) => {
-          if (err) {
-            console.error('Error deleting new image after update failure:', err);
-          }
-        });
+        const newImagePath = path.join('public/products', product.image);
+        try {
+          await fs.unlink(newImagePath); // Menggunakan promises dengan await untuk menangani error
+        } catch (err) {
+          console.error('Error deleting new image after update failure:', err);
+        }
       }
 
       throw new InternalServerErrorException('Failed to update product');

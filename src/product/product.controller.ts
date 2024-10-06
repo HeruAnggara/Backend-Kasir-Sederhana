@@ -29,6 +29,7 @@ export class ProductController {
     @UseInterceptors(
         FileInterceptor('image', {
           storage: diskStorage({
+            // destination: path.join(__dirname, '..', 'public/products'), for production
             destination: 'public/products',
             filename: (req, file, cb) => {
                 const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);

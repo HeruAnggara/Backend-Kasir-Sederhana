@@ -7,7 +7,9 @@ import { join } from 'path';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
+      // rootPath: join(__dirname, '..', 'public'), // For Production
+      rootPath: join('public'),
+      serveRoot: '/', 
     }),
     PrismaModule, 
     ProductModule],

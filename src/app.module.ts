@@ -3,6 +3,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ProductModule } from './product/product.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { PosModule } from './pos/pos.module';
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { join } from 'path';
       serveRoot: '/', 
     }),
     PrismaModule, 
-    ProductModule],
+    ProductModule, PosModule],
 })
 export class AppModule {}

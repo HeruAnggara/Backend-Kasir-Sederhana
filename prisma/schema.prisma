@@ -24,9 +24,11 @@ model Product {
 model Order {
   id            String    @id @default(uuid())
   invoiceNumber String    @unique
+  paidAmount    Int?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
+  doneAt        DateTime?
   orderProducts OrderProduct[]
 }
 

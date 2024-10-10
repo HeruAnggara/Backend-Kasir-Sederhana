@@ -8,8 +8,8 @@ export class PosController {
   constructor(private readonly posService: PosService) {}
 
   @Post()
-  create(@Body() createPoDto: CreatePoDto) {
-    return this.posService.create(createPoDto);
+  create() {
+    return this.posService.create();
   }
 
   @Get()
@@ -23,8 +23,8 @@ export class PosController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePoDto: UpdatePoDto) {
-    return this.posService.update(+id, updatePoDto);
+  update(@Param('id') id: string, @Body() isAdded: boolean) {
+    return this.posService.update(id, isAdded);
   }
 
   @Delete(':id')

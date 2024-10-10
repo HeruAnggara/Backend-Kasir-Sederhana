@@ -3,6 +3,7 @@ import { CreatePoDto } from './dto/create-po.dto';
 import { UpdatePoDto } from './dto/update-po.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ApiResponse } from 'helper/ApiResponse.interface';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class PosService {
@@ -192,13 +193,15 @@ export class PosService {
   }
 
   generateInvoiceNumber() {
+    const letter = randomUUID().slice(0, 1);
     const date = new Date();
     const year = date.getFullYear().toString().slice(-2);
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
     const randomNumber = Math.floor(Math.random() * 1000000);
 
-    return `INV-${year}-${month}-${day}-${randomNumber}`;
+    return `${letter}${year}${month}${day}${randomNumber}`;
+
   }
 
 

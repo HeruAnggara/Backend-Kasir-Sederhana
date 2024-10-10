@@ -98,10 +98,7 @@ export class PosService {
 
     if (orderProduct) {
       if (isAdded) {
-        await this.prismaService.orderProduct.update({
-          where: { id: orderProduct.id },
-          data: { quantity: orderProduct.quantity + 1 },
-        });
+        orderProduct.quantity = orderProduct.quantity + 1;
         
         return {
           statusCode: HttpStatus.OK,
